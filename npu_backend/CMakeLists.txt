@@ -11,5 +11,5 @@ find_package(Threads)
 add_definitions(-DCROW_USE_BOOST)
 
 include_directories(${Boost_INCLUDE_DIRS} ${CMAKE_SOURCE_DIR}/npu_backend)
-add_executable(npu_backend LoginController.cpp FanItem.cpp CreationController.cpp CreationItem.cpp main.cpp)
+add_executable(npu_backend AuthorizationModule.cpp LoginController.cpp FanItem.cpp CreationController.cpp CreationItem.cpp main.cpp)
 target_link_libraries(npu_backend ${Boost_LIBRARIES} Threads::Threads)

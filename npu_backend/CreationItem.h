@@ -3,6 +3,7 @@
 
 #include <string>
 #include <vector>
+#include "AuthorizationModule.h"
 
 namespace web_api {
 
@@ -12,16 +13,20 @@ private:
     std::string creationNPUType;
     int creationScore;
     std::vector<std::string> creationHashTags;
+    std::string userName;
+    std::string timestamp;
 
 public:
-    CreationItem(const std::string& name, const std::string& npuType);
+    CreationItem(const std::string& name, const std::string& npuType, const std::string& userName, const std::string& timestamp);
 
     std::string getName() const;
     std::string getNPUType() const;
     int getScore() const;
-    void setScore(int score);
+    bool setScore(int score, const std::string& token);
     std::vector<std::string> getHashTags() const;
-    void addHashTag(const std::string& hashTag);
+    bool addHashTag(const std::string& hashTag);
+    std::string getUserName() const;
+    std::string getTimestamp() const;
 };
 
 } // namespace web_api

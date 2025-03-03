@@ -2,8 +2,8 @@
 
 namespace web_api {
 
-CreationItem::CreationItem(const std::string& name, const std::string& npuType)
-    : creationName(name), creationNPUType(npuType), creationScore(0) {}
+CreationItem::CreationItem(const std::string& name, const std::string& npuType, const std::string& userName, const std::string& timestamp)
+    : creationName(name), creationNPUType(npuType), creationScore(0), userName(userName), timestamp(timestamp) {}
 
 std::string CreationItem::getName() const {
     return creationName;
@@ -17,16 +17,35 @@ int CreationItem::getScore() const {
     return creationScore;
 }
 
-void CreationItem::setScore(int score) {
-    creationScore = score;
+bool CreationItem::setScore(int score, const std::string& token) {
+    AuthorizationModule authModule;
+    // Make sure the current user is not the creator of the creation
+    if (authModule.verifyTokenBelongsToUser(token, userName)) {
+        return false;
+    }
+    // Verify that the user is authorized to update the creation
+    if (authModule.validateAuthorization(token, userName, Action::UPDATE)) {
+        creationScore = score;
+        return true;
+    }
+    return false;
 }
 
 std::vector<std::string> CreationItem::getHashTags() const {
     return creationHashTags;
 }
 
-void CreationItem::addHashTag(const std::string& hashTag) {
+bool CreationItem::addHashTag(const std::string& hashTag) {
     creationHashTags.push_back(hashTag);
+    return true;
+}
+
+std::string CreationItem::getUserName() const {
+    return userName;
+}
+
+std::string CreationItem::getTimestamp() const {
+    return timestamp;
 }
 
 } // namespace web_api

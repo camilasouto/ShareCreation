@@ -15,6 +15,7 @@ enum class Action {
 class AuthorizationModule {
 public:
     bool validateAuthorization(const std::string& token, const std::string& userName, Action action);
+    bool verifyTokenBelongsToUser(const std::string& token, const std::string& userName);
 };
 
 } // namespace web_api

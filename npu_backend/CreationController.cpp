@@ -2,8 +2,9 @@
 
 namespace web_api {
 
-void CreationController::uploadCreation(const std::string& name, const std::string& npuType) {
-    creations.emplace_back(name, npuType);
+bool CreationController::uploadCreation(const std::string& name, const std::string& npuType, const std::string& userName, const std::string& timestamp) {
+    creations.emplace_back(name, npuType, userName, timestamp);
+    return true;
 }
 
 CreationItem* CreationController::findCreation(const std::string& name) {

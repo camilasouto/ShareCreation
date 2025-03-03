@@ -15,7 +15,7 @@ private:
 
 public:
     FanItem(const std::string& fanName, const std::string& fanUserName, const std::string& fanDateOfBirth);
-    void addCreation(const std::string& creation);
+    bool addCreation(const std::string& creation);
     std::vector<std::string> getCreations() const;
     std::string getFanName() const;
     std::string getFanUserName() const;

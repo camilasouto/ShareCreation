@@ -64,8 +64,11 @@ int main()
             return crow::response(400);
 
         std::string creation = x["creation"].s();
-        fanItem.addCreation(creation);
-        return crow::response(200, "Creation added");
+        if (fanItem.addCreation(creation)) {
+            return crow::response(200, "Creation added");
+        } else {
+            return crow::response(500, "Failed to add creation");
+        }
     });
 
     web_api::CreationController creationController;
@@ -91,8 +94,13 @@ int main()
 
         std::string name = x["name"].s();
         std::string npuType = x["npuType"].s();
-        creationController.uploadCreation(name, npuType);
-        return crow::response(200, "Creation uploaded");
+        std::string userName = x["userName"].s();
+        std::string timestamp = x["timestamp"].s();
+        if (creationController.uploadCreation(name, npuType, userName, timestamp)) {
+            return crow::response(200, "Creation uploaded");
+        } else {
+            return crow::response(500, "Failed to upload creation");
+        }
     });
     CROW_ROUTE(app, "/creations/score").methods("POST"_method)([&creationController, &loginController](const crow::request& req){
         auto token = req.url_params.get("token");
@@ -107,8 +115,11 @@ int main()
         int score = x["score"].i();
         web_api::CreationItem* creation = creationController.findCreation(name);
         if (creation) {
-            creation->setScore(score);
-            return crow::response(200, "Score updated");
+            if (creation->setScore(score, token)) {
+                return crow::response(200, "Score updated");
+            } else {
+                return crow::response(403, "Forbidden");
+            }
         } else {
             return crow::response(404, "Creation not found");
         }
@@ -130,7 +141,9 @@ int main()
         web_api::CreationItem* creation = creationController.findCreation(name);
         if (creation) {
             for (const auto& hashTag : hashTags) {
-                creation->addHashTag(hashTag);
+                if (!creation->addHashTag(hashTag)) {
+                    return crow::response(500, "Failed to add hash tag");
+                }
             }
             return crow::response(200, "Hash tags added");
         } else {

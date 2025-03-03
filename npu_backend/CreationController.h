@@ -12,7 +12,7 @@ public:
     std::vector<CreationItem> creations;
 
 public:
-    void uploadCreation(const std::string& name, const std::string& npuType);
+    bool uploadCreation(const std::string& name, const std::string& npuType, const std::string& userName, const std::string& timestamp);
     CreationItem* findCreation(const std::string& name);
 };
 
