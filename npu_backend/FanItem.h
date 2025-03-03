@@ -12,9 +12,12 @@ private:
     std::string fanUserName;
     std::string fanDateOfBirth;
     std::vector<std::string> listOfCreations;
+  
+    FanItem(const std::string& fanName, const std::string& fanUserName, const std::string& fanDateOfBirth);
 
 public:
-    FanItem(const std::string& fanName, const std::string& fanUserName, const std::string& fanDateOfBirth);
+    static FanItem getInstance(const std::string& token);
+    static FanItem createFan(const std::string& fanName, const std::string& fanUserName, const std::string& fanDateOfBirth);
     bool addCreation(const std::string& creation);
     std::vector<std::string> getCreations() const;
     std::string getFanName() const;

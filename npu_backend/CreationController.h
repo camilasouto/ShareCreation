@@ -2,18 +2,20 @@
 #define CREATIONCONTROLLER_H
 
 #include <string>
-#include <vector>
+#include <map>
 #include "CreationItem.h"
 
 namespace web_api {
 
 class CreationController {
-public:
-    std::vector<CreationItem> creations;
+private:
+    std::map<std::string, CreationItem> creationsMap;
 
 public:
-    bool uploadCreation(const std::string& name, const std::string& npuType, const std::string& userName, const std::string& timestamp);
-    CreationItem* findCreation(const std::string& name);
+    bool uploadCreation(const std::string& creationName, const std::string& npuType, const std::string& userName, const std::string& timestamp);
+    CreationItem* findCreation(const std::string& creationName);
+    bool deleteCreation(const std::string& creationName);
+    const std::map<std::string, CreationItem>& getCreations() const { return creationsMap; }
 };
 
 } // namespace web_api

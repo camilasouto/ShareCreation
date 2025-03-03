@@ -5,7 +5,7 @@ namespace web_api {
 CreationItem::CreationItem(const std::string& name, const std::string& npuType, const std::string& userName, const std::string& timestamp)
     : creationName(name), creationNPUType(npuType), creationScore(0), userName(userName), timestamp(timestamp) {}
 
-std::string CreationItem::getName() const {
+std::string CreationItem::getCreationName() const {
     return creationName;
 }
 
@@ -24,7 +24,7 @@ bool CreationItem::setScore(int score, const std::string& token) {
         return false;
     }
     // Verify that the user is authorized to update the creation
-    if (authModule.validateAuthorization(token, userName, Action::UPDATE)) {
+    if (authModule.validateAuthorization(token, userName, CrudAction::ACTION_UPDATE)) {
         creationScore = score;
         return true;
     }

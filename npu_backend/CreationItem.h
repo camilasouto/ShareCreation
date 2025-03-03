@@ -19,7 +19,7 @@ private:
 public:
     CreationItem(const std::string& name, const std::string& npuType, const std::string& userName, const std::string& timestamp);
 
-    std::string getName() const;
+    std::string getCreationName() const;
     std::string getNPUType() const;
     int getScore() const;
     bool setScore(int score, const std::string& token);

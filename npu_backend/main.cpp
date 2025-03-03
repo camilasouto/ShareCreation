@@ -35,26 +35,48 @@ int main()
         }
     });
 
-    web_api::FanItem fanItem("admin", "admin", "01/01/1970");
-    CROW_ROUTE(app, "/fan")([&fanItem, &loginController](const crow::request& req){
+    CROW_ROUTE(app, "/fan")([&loginController](const crow::request& req){
         auto token = req.url_params.get("token");
         if (!token || !loginController.validateToken(token)) {
             return crow::response(401, "Unauthorized");
         }
-        return crow::response(200, fanItem.getFanName());
+        auto fanItem = web_api::FanItem::getInstance(token);
+        crow::json::wvalue response;
+        response["fanName"] = fanItem.getFanName();
+        response["fanUserName"] = fanItem.getFanUserName();
+        response["fanDateOfBirth"] = fanItem.getFanDateOfBirth();
+        return crow::response(200, response);
     });
-    CROW_ROUTE(app, "/fan/creations")([&fanItem, &loginController](const crow::request& req){
+
+    CROW_ROUTE(app, "/fan/add").methods("POST"_method)([&loginController](const crow::request& req){
+        auto token = req.url_params.get("token");
+        if (!token || !loginController.validateToken(token)) {
+            return crow::response(401, "Unauthorized");
+        }
+        auto x = crow::json::load(req.body);
+        if (!x)
+            return crow::response(400);
+
+        std::string fanName = x["fanName"].s();
+        std::string fanUserName = x["fanUserName"].s();
+        std::string fanDateOfBirth = x["fanDateOfBirth"].s();
+        web_api::FanItem::createFan(fanName, fanUserName, fanDateOfBirth);
+        return crow::response(200, "Fan created");
+    });
+
+    
+    CROW_ROUTE(app, "/fan/creations")([&loginController](const crow::request& req){
         auto token = req.url_params.get("token");
         if (!token || !loginController.validateToken(token)) {
             return crow::response(401, "Unauthorized");
         }
         std::string response = "";
-        for (const auto& creation : fanItem.getCreations()) {
+        for (const auto& creation : web_api::FanItem::getInstance(token).getCreations()) {
             response += creation + "\n";
         }
         return crow::response(200, response);
     });
-    CROW_ROUTE(app, "/fan/creations/add").methods("POST"_method)([&fanItem, &loginController](const crow::request& req){
+    CROW_ROUTE(app, "/fan/creations/add").methods("POST"_method)([&loginController](const crow::request& req){
         auto token = req.url_params.get("token");
         if (!token || !loginController.validateToken(token)) {
             return crow::response(401, "Unauthorized");
@@ -64,7 +86,7 @@ int main()
             return crow::response(400);
 
         std::string creation = x["creation"].s();
-        if (fanItem.addCreation(creation)) {
+        if (web_api::FanItem::getInstance(token).addCreation(creation)) {
             return crow::response(200, "Creation added");
         } else {
             return crow::response(500, "Failed to add creation");
@@ -78,8 +100,8 @@ int main()
             return crow::response(401, "Unauthorized");
         }
         std::string response = "";
-        for (const auto& creation : creationController.creations) {
-            response += creation.getName() + "\n";
+        for (const auto& creationPair : creationController.getCreations()) {
+            response += creationPair.second.getCreationName() + "\n";
         }
         return crow::response(200, response);
     });
@@ -134,9 +156,9 @@ int main()
             return crow::response(400);
 
         std::string name = x["name"].s();
-        std::vector<std::string> hashTags;
+        std::set<std::string> hashTags;
         for (const auto& tag : x["hashTags"].lo()) {
-            hashTags.push_back(tag.s());
+            hashTags.insert(tag.s());
         }
         web_api::CreationItem* creation = creationController.findCreation(name);
         if (creation) {
@@ -146,6 +168,23 @@ int main()
                 }
             }
             return crow::response(200, "Hash tags added");
+        } else {
+            return crow::response(404, "Creation not found");
+        }
+    });
+
+    CROW_ROUTE(app, "/creations/delete").methods("POST"_method)([&creationController, &loginController](const crow::request& req){
+        auto token = req.url_params.get("token");
+        if (!token || !loginController.validateToken(token)) {
+            return crow::response(401, "Unauthorized");
+        }
+        auto x = crow::json::load(req.body);
+        if (!x)
+            return crow::response(400);
+
+        std::string creationName = x["creationName"].s();
+        if (creationController.deleteCreation(creationName)) {
+            return crow::response(200, "Creation deleted");
         } else {
             return crow::response(404, "Creation not found");
         }
