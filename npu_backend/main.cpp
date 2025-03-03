@@ -3,6 +3,7 @@
 #include "CreationController.h"
 
 #include "crow_all.h"
+#include <cstdlib> // For std::getenv
 using std::cout;
 
 int main()
@@ -190,5 +191,9 @@ int main()
         }
     });
 
-    app.port(8888).run();
+    // Get the port from the environment variable or use 8888 as default
+    const char* port = std::getenv("PORT");
+    uint16_t portNumber = port ? std::stoi(port) : 8888;
+
+    app.port(portNumber).run();
 }
