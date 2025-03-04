@@ -3,6 +3,7 @@
 
 #include <string>
 #include <map>
+#include <vector>
 #include "CreationItem.h"
 
 namespace web_api {
@@ -16,6 +17,7 @@ public:
     CreationItem* findCreation(const std::string& creationName);
     bool deleteCreation(const std::string& creationName);
     const std::map<std::string, CreationItem>& getCreations() const { return creationsMap; }
+    std::vector<CreationItem> findCreationsByNpuType(const std::string& npuType);
 };
 
 } // namespace web_api

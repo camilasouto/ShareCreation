@@ -191,6 +191,22 @@ int main()
         }
     });
 
+    CROW_ROUTE(app, "/creations/find_by_nputype").methods("GET"_method)([&creationController, &loginController](const crow::request& req){
+        auto token = req.url_params.get("token");
+        if (!token || !loginController.validateToken(token)) {
+            return crow::response(401, "Unauthorized");
+        }
+        auto npuType = req.url_params.get("npuType");
+        if (!npuType) {
+            return crow::response(400, "Missing npuType parameter");
+        }
+        std::string response = "";
+        for (const auto& creation : creationController.findCreationsByNpuType(npuType)) {
+            response += creation.getCreationName() + "\n";
+        }
+        return crow::response(200, response);
+    });
+
     // Get the port from the environment variable or use 8888 as default
     const char* port = std::getenv("PORT");
     uint16_t portNumber = port ? std::stoi(port) : 8888;

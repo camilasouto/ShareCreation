@@ -19,4 +19,14 @@ bool CreationController::deleteCreation(const std::string& creationName) {
     return creationsMap.erase(creationName) > 0;
 }
 
+std::vector<CreationItem> CreationController::findCreationsByNpuType(const std::string& npuType) {
+    std::vector<CreationItem> result;
+    for (const auto& pair : creationsMap) {
+        if (pair.second.getNPUType() == npuType) {
+            result.push_back(pair.second);
+        }
+    }
+    return result;
+}
+
 } // namespace web_api
